@@ -22,21 +22,16 @@ def detect_subtitle_area(ocr_results, h, w):
         h(int): height of the input video
     '''
     ocr_results = ocr_results[0]  # 0, the first image result
-    candidates = []
-    for result in ocr_results:
-        boxes, text = result
-        # Check if the subtitle is within the desired vertical range
+    subtitle_text = ""
+    for boxes, text in ocr_results:
+        # Check if the text is within the desired vertical range
         if boxes[0][1] >= h * 0.3 and boxes[3][1] <= h * 0.8:
-            con_boxes = copy.deepcopy(boxes)
-            con_text = text[0]
-            candidates.append((con_boxes, con_text))
-    # TODO: Process the candidates to merge overlapping or adjacent boxes if necessary
-    # This part of the code depends on how you want to handle multiple text boxes in the area
-    # For now, we just return the last candidate
-    if candidates:
-        sub_boxes, subtitle = candidates[-1]
-        return True, box2int(sub_boxes), subtitle
-    return False, None, None
+            subtitle_text += " " + text[0]
+
+    if subtitle_text:
+        return True, subtitle_text.strip()
+    return False, None
+
 
 
 
