@@ -22,36 +22,22 @@ def detect_subtitle_area(ocr_results, h, w):
         h(int): height of the input video
     '''
     ocr_results = ocr_results[0]  # 0, the first image result
-    # Merge horizon text areas
-    idx = 0
     candidates = []
-    while idx < len(ocr_results):
-        boxes, text = ocr_results[idx]
-        # We assume the subtitle is at bottom of the video
-        if boxes[0][1] < h * 0.3 or boxes[3][1] > h * 0.8:
-            idx += 1
-            continue
-        idx += 1
-        con_boxes = copy.deepcopy(boxes)
-        con_text = text[0]
-        while idx < len(ocr_results):
-            n_boxes, n_text = ocr_results[idx]
-            if abs(n_boxes[0][1] - boxes[0][1]) < h * 0.01 and \
-               abs(n_boxes[3][1] - boxes[3][1]) < h * 0.01:
-                con_boxes[1] = n_boxes[1]
-                con_boxes[2] = n_boxes[2]
-                con_text = con_text + ' ' + n_text[0]
-                idx += 1
-            else:
-                break
-        candidates.append((con_boxes, con_text))
-    # TODO(Binbin Zhang): Only support horion center subtitle
-    if len(candidates) > 0:
+    for result in ocr_results:
+        boxes, text = result
+        # Check if the subtitle is within the desired vertical range
+        if boxes[0][1] >= h * 0.3 and boxes[3][1] <= h * 0.8:
+            con_boxes = copy.deepcopy(boxes)
+            con_text = text[0]
+            candidates.append((con_boxes, con_text))
+    # TODO: Process the candidates to merge overlapping or adjacent boxes if necessary
+    # This part of the code depends on how you want to handle multiple text boxes in the area
+    # For now, we just return the last candidate
+    if candidates:
         sub_boxes, subtitle = candidates[-1]
-        # offset is less than 10%
-        if (sub_boxes[0][0] + sub_boxes[1][0]) / w > 0.90:
-            return True, box2int(sub_boxes), subtitle
+        return True, box2int(sub_boxes), subtitle
     return False, None, None
+
 
 
 def get_args():
