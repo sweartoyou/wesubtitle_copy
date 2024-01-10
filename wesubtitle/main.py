@@ -28,7 +28,7 @@ def detect_subtitle_area(ocr_results, h, w):
     while idx < len(ocr_results):
         boxes, text = ocr_results[idx]
         # We assume the subtitle is at bottom of the video
-        if boxes[0][1] < h * 0.3:
+        if boxes[0][1] < h * 0.3 or boxes[3][1] > h * 0.8:
             idx += 1
             continue
         idx += 1
