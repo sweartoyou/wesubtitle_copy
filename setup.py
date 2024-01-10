@@ -8,10 +8,10 @@ requirements = [
 ]
 
 setup(
-    name="wesubtitle",
+    name="wesubtitle_copy",
     install_requires=requirements,
     packages=find_packages(),
     entry_points={"console_scripts": [
-        "wesubtitle = wesubtitle_copy.main:main",
+        "wesubtitle_copy = wesubtitle_copy.main:main",
     ]},
 )
